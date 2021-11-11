@@ -1,0 +1,25 @@
+.item {
+  width: auto;
+  height: auto;
+  outline: 1px solid rgb(186, 187, 187);
+  border-radius: 3px;
+  padding: 5px;
+  margin: 1rem 1rem;
+}
+.item:hover {
+  outline: 1px solid cyan;
+}
+.first {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+}
+
+.second {
+  padding: 5px;
+}
+
+.third {
+  display: flex;
+  padding: 5px;
+}

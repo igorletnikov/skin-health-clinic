@@ -1,0 +1,29 @@
+{
+  "root": "apps/sharedui-e2e",
+  "sourceRoot": "apps/sharedui-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/sharedui-e2e/cypress.json",
+        "devServerTarget": "sharedui:storybook",
+        "tsConfig": "apps/sharedui-e2e/tsconfig.json"
+      },
+      "configurations": {
+        "ci": {
+          "devServerTarget": "sharedui:storybook:ci"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/sharedui-e2e/**/*.js"]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["sharedui"]
+}

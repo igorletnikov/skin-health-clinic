@@ -1,4 +1,8 @@
 {
   "version": 2,
-  "projects": {}
+  "projects": {
+    "sharedui": "libs/sharedui",
+    "sharedui-e2e": "apps/sharedui-e2e",
+    "skinhealthclinic": "apps/skinhealthclinic"
+  }
 }
