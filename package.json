@@ -9,8 +9,10 @@
   },
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.4.17",
     "antd": "^4.16.13",
     "core-js": "^3.6.5",
+    "graphql": "^15.7.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "regenerator-runtime": "0.13.7",
