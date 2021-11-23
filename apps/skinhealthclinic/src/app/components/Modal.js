@@ -2,13 +2,33 @@ import React, { Fragment, useState } from 'react';
 import { ADD_DATA } from '../graphql/mutation';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { gql, useMutation } from '@apollo/client';
-import { GET_SERVICES_DATA_ALL, GET_SERVICES_DATA } from '../graphql/queries';
+import {
+  GET_SERVICES_DATA_ALL,
+  GET_SERVICES_DATA,
+  GET_MASTER,
+  GET_CATEGORIES_DATA,
+} from '../graphql/queries';
 import { Modal, Button } from 'antd';
 import { useEffect } from 'react';
 
 export default function ModalMine() {
+  
   const [addData] = useMutation(ADD_DATA);
   const { data: servicesAll } = useQuery(GET_SERVICES_DATA_ALL);
+
+  const [getMaster, { data: master_categories, error: mError }] =
+    useLazyQuery(GET_MASTER);
+
+  const [getCategories, { data: categories, error: cError }] =
+    useLazyQuery(GET_CATEGORIES_DATA);
+
+  useEffect(() => {
+    getMaster();
+    getCategories({ variables: { master_category_id: 1 } });
+  }, []);
+  useEffect(() => {
+    if (master_categories) setCategoryId(categoryId);
+  }, [categories]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -27,16 +47,6 @@ export default function ModalMine() {
 
   const handleOk = (e) => {
     setIsModalVisible(false);
-    console.log(e);
-    console.log('master id :', masterId);
-    console.log('category id :', categoryId);
-    console.log('id :', id);
-    console.log('name :', name);
-    console.log('price :', price);
-    console.log('rating :', rating);
-    console.log('duration :', duration);
-    console.log('in_clinic : ', inClinic);
-
     addData({
       variables: {
         master_category_id: masterId,
@@ -49,13 +59,11 @@ export default function ModalMine() {
         in_clinic: inClinic,
       } /*,
       refetchQueries:[{query: GET_SERVICES_DATA,variables:{category_id: categoryId} }]*/,
-      update: (cache, { data }) => {
+      update: (cache) => {
         const existing = cache.readQuery({
           query: GET_SERVICES_DATA,
           variables: { category_id: categoryId },
         });
-        //services = [...services, addData];
-        //cache.writeQuery({ query: GET_SERVICES_DATA }, data);
         if (existing) {
           cache.writeQuery({
             query: GET_SERVICES_DATA,
@@ -85,43 +93,38 @@ export default function ModalMine() {
         onCancel={handleCancel}
       >
         <select
-          id="master_categories"
           onChange={(e) => {
+            console.log(e.target.value);
             setMasterId(e.target.value);
+            getCategories({
+              variables: { master_category_id: e.target.value },
+            });
           }}
         >
-          <option value="1">Injectables</option>
-          <option value="2">Face</option>
-          <option value="3">Spa</option>
-          <option value="4">Dematology</option>
-          <option value="5">Acne treatment</option>
-          <option value="6">Hydrafacial</option>
+          {master_categories &&
+            master_categories.master_categories.map((x) => (
+              <option key={x.id} value={x.id}>{x.name}</option>
+            ))}
         </select>
+
         <select
-          id="categories"
           onChange={(e) => {
-            setCategoryId(e.target.value);
+            console.log(e.target.value);
+            console.log(e.target.value);
+            setCategoryId(e.target.value)
           }}
         >
-          <option value="1">Botox</option>
-          <option value="2">Filler</option>
-          <option value="3">Face Peel</option>
-          <option value="4">Microdermabrasion</option>
-          <option value="5">Massage</option>
-          <option value="6">Facial</option>
-          <option value="7">Nail Bar</option>
-          <option value="8">skin</option>
-          <option value="9">hair</option>
-          <option value="10">Spot</option>
-          <option value="11">Tweak</option>
-          <option value="12">deep-clean</option>
-          <option value="13">dryness</option>
+          {categories &&
+            categories.categories.map((x) => (
+              <option key={x.id} value={x.id}>{x.name}</option>
+            ))}
         </select>
+
         <div>
           <label>Id:</label>
           <input
             type="number"
-            value={servicesAll && servicesAll.services.length + 2}
+            defaultValue={servicesAll && servicesAll.services.length}
             onChange={(e) => {
               console.log(e);
               setId(e.target.value);
