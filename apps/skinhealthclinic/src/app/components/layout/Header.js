@@ -5,6 +5,7 @@ import { Layout } from 'antd';
 import '../SkinHealth.css';
 const { Header, Content, Footer } = Layout;
 import { ArrowLeftOutlined } from '@ant-design/icons';
+
 function HeaderLayout(props) {
   return (
     <Fragment>

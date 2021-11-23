@@ -1,39 +1,53 @@
 import './SkinHealth.css';
 import { CreditCardOutlined, AppstoreOutlined } from '@ant-design/icons';
-import { useEffect, Fragment } from 'react';
+import { useEffect, Fragment, useState } from 'react';
+import {
+  GET_MASTER,
+  GET_CATEGORIES_DATA,
+  GET_ALL_CATEGORIES_DATA,
+  GET_SERVICES_DATA,
+} from '../graphql/queries';
+import { useLazyQuery } from '@apollo/client';
+import Categories from './Categories';
 
-function MasterCategories({ dataMaster,active,setActive,filterActive,setFilterActive,setRightFilter }) {
+function MasterCategories({
+  active,
+  setActive,
+  setFilterActive,
+  setRightFilter,
+}) {
+  const [getMaster, { data: master_categories, error: mError }] =
+    useLazyQuery(GET_MASTER);
+  const [getCategories, { data: categories, error: cError }] =
+    useLazyQuery(GET_CATEGORIES_DATA);
+  const [getAllCategories, { data: categories_all, error: caError }] =
+    useLazyQuery(GET_ALL_CATEGORIES_DATA);
+  const [getServices, { data: services, error: sError }] =
+    useLazyQuery(GET_SERVICES_DATA);
 
   useEffect(() => {
+    getMaster();
+    getAllCategories();
     showAll();
-  }, [dataMaster]);
+  }, [categories_all]);
+
+  useEffect(() => {
+    setFilterActive(categories);
+    if (categories)
+      getServices({ variables: { category_id: categories.categories[0].id } });
+  }, [categories]);
+
+  useEffect(() => {
+    setRightFilter(services);
+  }, [services]);
+
   function showAll() {
-    if (dataMaster) {
-      const array = [];
-      dataMaster.map((x) => {
-        x.categories.map((y) =>
-          array.push({
-            id: y.id,
-            name: y.name,
-            services: y.services,
-          })
-        );
+    if (categories_all)
+      getServices({
+        variables: { category_id: categories_all.categories[0].id },
       });
-      const firstCategoryService = array.map((x) => x);
-      setFilterActive(array);
-      const [arrayServices] = array;
-      setRightFilter(arrayServices && arrayServices.services);
-    }
+    setFilterActive(categories_all);
   }
-  const topHandler = (x) => {
-    console.log(x);
-    setActive(x.name);
-    console.log('active:' + active, ' momentalno kliknatiot', x.name);
-    setFilterActive(x.categories);
-    console.log('filterActive(levite kategorii):' + filterActive);
-    setRightFilter(x.categories[0].services);
-    console.log('services', x.categories[0].services);
-  };
   return (
     <Fragment>
       <div className="site-layout-content-top">
@@ -44,7 +58,6 @@ function MasterCategories({ dataMaster,active,setActive,filterActive,setFilterAc
               showAll();
             }}
             className={active === 'all' ? 'item activeItem' : 'item'}
-            //value={dataMaster.value}
           >
             <AppstoreOutlined
               style={{ fontSize: '40px', color: '#54B2D3' }}
@@ -52,13 +65,13 @@ function MasterCategories({ dataMaster,active,setActive,filterActive,setFilterAc
             />
             <span>All</span>
           </div>
-          {dataMaster &&
-            dataMaster.map((x) => (
+          {master_categories &&
+            master_categories.master_categories.map((x) => (
               <div
                 key={x.id}
                 onClick={() => {
                   setActive(x.name);
-                  topHandler(x);
+                  getCategories({ variables: { master_category_id: x.id } });
                 }}
                 className={active === `${x.name}` ? 'item activeItem' : 'item'}
               >

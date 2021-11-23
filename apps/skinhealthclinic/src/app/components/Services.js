@@ -2,12 +2,9 @@ import './SkinHealth.css';
 import { useState } from 'react';
 import { MedicineBoxOutlined, LaptopOutlined } from '@ant-design/icons';
 import { ServiceComponent } from '@skin-health-clinic/sharedui';
-function Services({servicesData}) {
+
+function Services({ rightFilter }) {
   const [statusOnline, setStatusOnline] = useState(true);
-  const rightHandler = (x) => {
-    console.log('rightFilter:' + x.name);
-    setStatusOnline(x.online);
-  };
   return (
     <div className="site-layout-content-right">
       <div>
@@ -37,16 +34,19 @@ function Services({servicesData}) {
           <span> Virtual Consultation</span>
         </div>
 
-        {servicesData && servicesData.map((x) => (
-          <div onClick={() => rightHandler(x)} key={x.id}>
-            <ServiceComponent
-              name={x.name}
-              price={x.price}
-              time={x.time}
-              review={x.review}
-            />
-          </div>
-        ))}
+        {rightFilter &&
+          rightFilter.services?.map((x) => (
+            <div onClick={() => {
+                console.log('OK');
+            }} key={x.id}>
+              <ServiceComponent
+                name={x.name}
+                price={x.price}
+                time={x.duration}
+                review={x.review}
+              />
+            </div>
+          ))}
       </div>
     </div>
   );

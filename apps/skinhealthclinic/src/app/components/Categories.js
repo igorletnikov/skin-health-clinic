@@ -1,22 +1,28 @@
 import './SkinHealth.css';
-import {Fragment } from 'react';
+import { useEffect, Fragment } from 'react';
+import { GET_SERVICES_DATA } from '../graphql/queries';
+import { useLazyQuery } from '@apollo/client';
 
-function Categories({ categoriesData, active,setRightFilter,rightFilter }) {
-   const leftHandler = (x) => {
-    setRightFilter(x.services);
-    console.log('rightFilter:' + rightFilter);
-    console.log(x);
-  };
+function Categories({
+  filterActive,
+  active,
+  setRightFilter,
+}) {
+  const [getServices, { data: services, error: sError }] =
+    useLazyQuery(GET_SERVICES_DATA);
 
+  useEffect(() => {
+    setRightFilter(services);
+  }, [services]);
   return (
     <Fragment>
       <div className="site-layout-content-left">
         <div>
-          {categoriesData &&
-            categoriesData.map((x) => (
+          {filterActive &&
+            filterActive.categories?.map((x) => (
               <div
                 onClick={() => {
-                  leftHandler(x);
+                  getServices({ variables: { category_id: x.id } });
                 }}
                 key={x.id}
                 className={
@@ -38,7 +44,6 @@ function Categories({ categoriesData, active,setRightFilter,rightFilter }) {
             ))}
         </div>
       </div>
-      
     </Fragment>
   );
 }
