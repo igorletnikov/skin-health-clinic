@@ -1,52 +1,32 @@
 import './SkinHealth.css';
 import { CreditCardOutlined, AppstoreOutlined } from '@ant-design/icons';
 import { useEffect, Fragment, useState } from 'react';
-import {
-  GET_MASTER,
-  GET_CATEGORIES_DATA,
-  GET_ALL_CATEGORIES_DATA,
-  GET_SERVICES_DATA,
-} from '../graphql/queries';
-import { useLazyQuery } from '@apollo/client';
-import Categories from './Categories';
+import { GET_MASTER, GET_CATEGORIES_DATA,GET_ALL_CATEGORIES_DATA } from '../graphql/queries';
+import { useQuery } from '@apollo/client';
 
 function MasterCategories({
   active,
   setActive,
-  setFilterActive,
-  setRightFilter,
+  masterID,
+  setmasterID,
+  setcategoryID,
 }) {
-  const [getMaster, { data: master_categories, error: mError }] =
-    useLazyQuery(GET_MASTER);
-  const [getCategories, { data: categories, error: cError }] =
-    useLazyQuery(GET_CATEGORIES_DATA);
-  const [getAllCategories, { data: categories_all, error: caError }] =
-    useLazyQuery(GET_ALL_CATEGORIES_DATA);
-  const [getServices, { data: services, error: sError }] =
-    useLazyQuery(GET_SERVICES_DATA);
+  const { data: master_categories } = useQuery(GET_MASTER);
+ // const { data: categories_all } = useQuery(GET_ALL_CATEGORIES_DATA);
+  const { data: categories } = useQuery(GET_CATEGORIES_DATA, {
+    variables: { master_category_id: masterID },
+  });
 
   useEffect(() => {
-    getMaster();
-    getAllCategories();
-    showAll();
-  }, [categories_all]);
-
-  useEffect(() => {
-    setFilterActive(categories);
-    if (categories)
-      getServices({ variables: { category_id: categories.categories[0].id } });
+    if (categories) {
+      setcategoryID(categories.categories[0].id);
+    }
   }, [categories]);
-
   useEffect(() => {
-    setRightFilter(services);
-  }, [services]);
-
+     showAll();
+  }, [])
   function showAll() {
-    if (categories_all)
-      getServices({
-        variables: { category_id: categories_all.categories[0].id },
-      });
-    setFilterActive(categories_all);
+    setActive('all');
   }
   return (
     <Fragment>
@@ -71,7 +51,7 @@ function MasterCategories({
                 key={x.id}
                 onClick={() => {
                   setActive(x.name);
-                  getCategories({ variables: { master_category_id: x.id } });
+                  setmasterID(x.id);
                 }}
                 className={active === `${x.name}` ? 'item activeItem' : 'item'}
               >
@@ -79,11 +59,9 @@ function MasterCategories({
                   src={require(`../../assets/${x.image}.svg`).default}
                   alt="image"
                 />
-
                 <span>{x.name}</span>
               </div>
             ))}
-
           <div className="item">
             <CreditCardOutlined
               style={{

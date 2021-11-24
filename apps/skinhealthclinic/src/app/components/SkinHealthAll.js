@@ -9,8 +9,9 @@ import ModalMine from './Modal';
 
 function SkinHealthAll() {
   const [active, setActive] = useState('');
-  const [filterActive, setFilterActive] = useState([]);
-  const [rightFilter, setRightFilter] = useState([]);
+
+  const [masterID, setmasterID] = useState(1);
+  const [categoryID, setcategoryID] = useState(1);
 
   return (
     <Fragment>
@@ -18,18 +19,20 @@ function SkinHealthAll() {
         <MasterCategories
           active={active}
           setActive={setActive}
-          setFilterActive={setFilterActive}
-          setRightFilter={setRightFilter}
+          setmasterID={setmasterID}
+          masterID={masterID}
+          setcategoryID={setcategoryID}
         />
         <Categories
           active={active}
-          filterActive={filterActive}
-          setRightFilter={setRightFilter}
+          masterID={masterID}
+          setcategoryID={setcategoryID}
         />
-        <Services rightFilter={rightFilter} />
-        
-      </HeaderLayout>
-      <ModalMine/>
+        <Services  
+        categoryID={categoryID}
+        setcategoryID={setcategoryID}
+        />
+        </HeaderLayout>
     </Fragment>
   );
 }
